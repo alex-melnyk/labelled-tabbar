@@ -1,27 +1,28 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Animated } from 'react-native';
 import { MainNavigator } from './src/navigation';
 
+const items = [
+  { icon: 'home', label: 'Home', color: '#553DB0' },
+  { icon: 'heart', label: 'Likes', color: '#BA4699' },
+  { icon: 'search', label: 'Search', color: '#DDAA40' },
+  { icon: 'user', label: 'Profile', color: '#4392A5' },
+];
+
 const App: React.FC = () => {
   const [selected, setSelected] = useState(0);
-  const animated = new Animated.Value(selected);
-
-  const items = [
-    { icon: 'home', label: 'Home', color: '#553DB0' },
-    { icon: 'heart', label: 'Likes', color: '#BA4699' },
-    { icon: 'search', label: 'Search', color: '#DDAA40' },
-    { icon: 'user', label: 'Profile', color: '#4392A5' },
-  ];
+  const animated = useMemo(() => new Animated.Value(selected), []);
 
   const handleTabSelected = useCallback((tabIndex: number) => {
     setSelected(tabIndex);
+
     Animated.timing(animated, {
       toValue: tabIndex,
-      duration: 300
+      duration: 200
     }).start();
   }, []);
 
-  const background = animated.interpolate({
+  const backgroundColor = animated.interpolate({
     inputRange: Object.keys(items).map((k) => +k),
     outputRange: Object.values(items).map((item) => item.color)
   });
@@ -29,7 +30,7 @@ const App: React.FC = () => {
   return (
     <Animated.View style={{
       flex: 1,
-      backgroundColor: background
+      backgroundColor
     }}>
       <MainNavigator
         items={items}

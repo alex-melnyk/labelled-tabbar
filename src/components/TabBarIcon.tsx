@@ -1,17 +1,15 @@
 import React, { useMemo } from 'react';
-import { Animated, Dimensions, TouchableWithoutFeedback, View } from 'react-native';
+import { Animated, TouchableWithoutFeedback, View } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 
 const AnimatedIcon = Animated.createAnimatedComponent(FontAwesome);
-
-const {
-  width: screenWidth
-} = Dimensions.get('screen');
 
 type Props = {
   animated: Animated.Value;
   icon: string;
   label: string;
+  size: number;
+  maxWidth: number;
   color?: string;
   onPress: () => void;
 };
@@ -20,10 +18,15 @@ export const TabBarIcon: React.FC<Props> = ({
   animated,
   icon,
   label,
+  size,
+  maxWidth,
   color = '#333333',
   onPress
 }) => {
-  const maxWidth = useMemo(() => screenWidth - 60 * 3 - 40, []);
+  const padding = 15;
+
+  const minSize = useMemo(() => size + padding * 2, [size]);
+  const fontSize = useMemo(() => size * 0.666666667, [size]);
 
   const secondaryColor = animated.interpolate({
     inputRange: [0, 1],
@@ -45,29 +48,33 @@ export const TabBarIcon: React.FC<Props> = ({
     outputRange: [0, 1]
   });
 
+  const translate = animated.interpolate({
+    inputRange: [0, 1],
+    outputRange: [-5, 0]
+  });
+
   return (
     <TouchableWithoutFeedback onPress={onPress}>
       <Animated.View style={{
         flexGrow: 1,
         flexDirection: 'row',
         alignItems: 'center',
-        height: 60,
-        minWidth: 60,
+        height: minSize,
+        minWidth: minSize,
         maxWidth: maxWidth,
-        overflow: 'hidden',
         backgroundColor: secondaryColor,
-        borderRadius: 30,
-        padding: 15
+        borderRadius: minSize / 2,
+        padding: padding
       }}>
         <View style={{
-          width: 30,
-          height: 30,
+          width: size,
+          height: size,
           alignItems: 'center',
           justifyContent: 'center'
         }}>
           <AnimatedIcon
             name={icon}
-            size={25}
+            size={size - 5}
             style={{
               color: primaryColor
             }}
@@ -75,10 +82,13 @@ export const TabBarIcon: React.FC<Props> = ({
         </View>
         <Animated.Text
           style={{
-            fontSize: 20,
+            fontSize,
             opacity,
             width,
-            color: primaryColor
+            color: primaryColor,
+            transform: [
+              { translateX: translate }
+            ]
           }}
           ellipsizeMode="clip"
         >

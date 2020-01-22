@@ -1,6 +1,10 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { Animated, Easing, View } from 'react-native';
+import React, { useEffect, useMemo } from 'react';
+import { Animated, Dimensions, Easing, View } from 'react-native';
 import { TabBarIcon } from '../components';
+
+const {
+  width: screenWidth
+} = Dimensions.get('screen');
 
 type TabItem = {
   icon: string;
@@ -11,26 +15,38 @@ type TabItem = {
 type Props = {
   items: TabItem[];
   selected: number;
+  iconSize?: number;
   onSelected: (tabIndex: number) => void;
 };
 
-export const MainNavigator: React.FC<Props> = ({ items, selected, onSelected }) => {
-  const tabsAnimations = useMemo(() => items.map(() => new Animated.Value(0)), []);
+export const MainNavigator: React.FC<Props> = ({
+  items,
+  selected,
+  iconSize = 30,
+  onSelected
+}) => {
+  const padding = 15;
+  const tabsAnimations = useMemo(() => items.map(() => new Animated.Value(0)), [items]);
+  const maxItemWidth = useMemo(() => {
+    return screenWidth - (iconSize + 30) * (items.length - 1) - (padding * 2);
+  }, [items, screenWidth, iconSize, padding]);
 
   useEffect(() => {
-    const animations = tabsAnimations.map((anim, animIdx) => Animated.timing(anim, {
+    const animation = Animated.parallel(tabsAnimations.map((anim, animIdx) => Animated.timing(anim, {
       toValue: animIdx === selected ? 1 : 0,
       duration: 200,
       easing: Easing.linear
-    }));
+    })));
 
-    Animated.parallel(animations).start();
+    animation.start();
+
+    return () => {
+      animation.stop();
+    };
   }, [tabsAnimations, selected]);
 
   const tabs = useMemo(() => items.map((icon, idx) => {
-    const handlePress = () => {
-      onSelected(idx);
-    };
+    const handlePress = () => onSelected(idx);
 
     return (
       <TabBarIcon
@@ -38,11 +54,13 @@ export const MainNavigator: React.FC<Props> = ({ items, selected, onSelected }) 
         animated={tabsAnimations[idx]}
         icon={icon.icon}
         label={icon.label}
+        size={iconSize}
+        maxWidth={maxItemWidth}
         color={icon.color}
         onPress={handlePress}
       />
     );
-  }), [selected]);
+  }), [items, selected]);
 
   return (
     <View
@@ -50,11 +68,11 @@ export const MainNavigator: React.FC<Props> = ({ items, selected, onSelected }) 
         position: 'absolute',
         left: 0,
         bottom: 0,
-        padding: 20,
         width: '100%',
-        height: 100,
         flexDirection: 'row',
-        backgroundColor: 'white'
+        backgroundColor: 'white',
+        padding: padding,
+        height: iconSize + 30 + padding * 2,
       }}
     >
       <View style={{
