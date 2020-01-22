@@ -1,28 +1,35 @@
-import React, { useMemo, useState } from 'react';
-import { Animated, View } from 'react-native';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Animated, Easing, View } from 'react-native';
 import { TabBarIcon } from '../components';
 
-const icons = [
-  { icon: 'home', label: 'Home', color: '#FF9B00' },
-  { icon: 'heart', label: 'Likes', color: '#00FF9B' },
-  { icon: 'search', label: 'Search', color: '#9B00FF' },
-  { icon: 'user', label: 'Profile', color: '#9BFF00' },
-];
+type TabItem = {
+  icon: string;
+  label: string;
+  color?: string;
+};
 
-export const MainNavigator: React.FC = () => {
-  const [selected, setSelected] = useState(0);
-  const tabsAnimations = useMemo(() => icons.map(() => new Animated.Value(0)), []);
+type Props = {
+  items: TabItem[];
+  selected: number;
+  onSelected: (tabIndex: number) => void;
+};
 
-  const tabs = useMemo(() => icons.map((icon, idx) => {
+export const MainNavigator: React.FC<Props> = ({ items, selected, onSelected }) => {
+  const tabsAnimations = useMemo(() => items.map(() => new Animated.Value(0)), []);
+
+  useEffect(() => {
+    const animations = tabsAnimations.map((anim, animIdx) => Animated.timing(anim, {
+      toValue: animIdx === selected ? 1 : 0,
+      duration: 200,
+      easing: Easing.linear
+    }));
+
+    Animated.parallel(animations).start();
+  }, [tabsAnimations, selected]);
+
+  const tabs = useMemo(() => items.map((icon, idx) => {
     const handlePress = () => {
-      setSelected(idx);
-
-      const animations = tabsAnimations.map((anim, animIdx) => Animated.timing(anim, {
-        toValue: animIdx === idx ? 1 : 0,
-        duration: 1000
-      }));
-
-      Animated.parallel(animations).start();
+      onSelected(idx);
     };
 
     return (
@@ -31,7 +38,7 @@ export const MainNavigator: React.FC = () => {
         animated={tabsAnimations[idx]}
         icon={icon.icon}
         label={icon.label}
-        active={idx === selected}
+        color={icon.color}
         onPress={handlePress}
       />
     );

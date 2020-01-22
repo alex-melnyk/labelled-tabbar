@@ -1,6 +1,8 @@
-import React, { useEffect, useMemo } from 'react';
-import { Animated, Dimensions, Easing, TouchableWithoutFeedback, View } from 'react-native';
+import React, { useMemo } from 'react';
+import { Animated, Dimensions, TouchableWithoutFeedback, View } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
+
+const AnimatedIcon = Animated.createAnimatedComponent(FontAwesome);
 
 const {
   width: screenWidth
@@ -10,9 +12,7 @@ type Props = {
   animated: Animated.Value;
   icon: string;
   label: string;
-  active?: boolean;
-  primaryColor?: string;
-  secondaryColor?: string;
+  color?: string;
   onPress: () => void;
 };
 
@@ -20,16 +20,19 @@ export const TabBarIcon: React.FC<Props> = ({
   animated,
   icon,
   label,
-  active,
-  primaryColor = '#333333',
-  secondaryColor = '#EEEEEE',
+  color = '#333333',
   onPress
 }) => {
   const maxWidth = useMemo(() => screenWidth - 60 * 3 - 40, []);
 
-  const bg = animated.interpolate({
+  const secondaryColor = animated.interpolate({
     inputRange: [0, 1],
-    outputRange: [`${secondaryColor}00`, secondaryColor]
+    outputRange: [`#00000000`, `${color}1F`]
+  });
+
+  const primaryColor = animated.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['#333333FF', color]
   });
 
   const width = animated.interpolate({
@@ -52,7 +55,7 @@ export const TabBarIcon: React.FC<Props> = ({
         minWidth: 60,
         maxWidth: maxWidth,
         overflow: 'hidden',
-        backgroundColor: bg,
+        backgroundColor: secondaryColor,
         borderRadius: 30,
         padding: 15
       }}>
@@ -62,18 +65,20 @@ export const TabBarIcon: React.FC<Props> = ({
           alignItems: 'center',
           justifyContent: 'center'
         }}>
-          <FontAwesome
+          <AnimatedIcon
             name={icon}
             size={25}
-            color={active ? primaryColor : '#333333'}
+            style={{
+              color: primaryColor
+            }}
           />
         </View>
         <Animated.Text
           style={{
+            fontSize: 20,
             opacity,
             width,
-            color: primaryColor,
-            fontSize: 20
+            color: primaryColor
           }}
           ellipsizeMode="clip"
         >
