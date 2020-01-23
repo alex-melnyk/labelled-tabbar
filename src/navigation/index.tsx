@@ -75,12 +75,7 @@ export const MainNavigator: React.FC<Props> = ({
         height: iconSize + 30 + padding * 2,
       }}
     >
-      <View style={{
-        flex: 1,
-        flexDirection: 'row'
-      }}>
-        {tabs}
-      </View>
+      {tabs}
     </View>
   );
 };
