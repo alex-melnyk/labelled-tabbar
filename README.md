@@ -1,3 +1,3 @@
 # Labelled TabBar
 
-![Labelled TabBar Preview](./PREVIEW.gif)
+![Preview](./PREVIEW.gif?raw=true "Labelled TabBar")
