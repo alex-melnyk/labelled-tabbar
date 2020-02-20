@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo } from 'react';
-import { Animated, Dimensions, Easing, View } from 'react-native';
+import { Animated, Dimensions, Easing, StyleSheet, View } from 'react-native';
 import { TabBarIcon } from '../components';
 
 const {
@@ -64,39 +64,23 @@ export const MainNavigator: React.FC<Props> = ({
 
   return (
     <View
-      style={{
-        position: 'absolute',
-        left: 0,
-        bottom: 0,
-        width: '100%',
-        flexDirection: 'row',
-        backgroundColor: 'white',
+      style={[styles.container, {
         padding: padding,
         height: iconSize + 30 + padding * 2,
-      }}
+      }]}
     >
       {tabs}
     </View>
   );
 };
 
-const styles = {
-  itemContainer: {
-    // flex: 1,
-    flexGrow: 1,
-    minWidth: '5%',
-    maxWidth: '85%'
-  },
-  item1: {
-    backgroundColor: "#009BFF"
-  },
-  item2: {
-    backgroundColor: "#FF009B"
-  },
-  item3: {
-    backgroundColor: "#9BFF00"
-  },
-  item4: {
-    backgroundColor: "#FF9B00"
-  },
-};
+const styles = StyleSheet.create({
+  container: {
+    position: 'absolute',
+    left: 0,
+    bottom: 0,
+    width: '100%',
+    flexDirection: 'row',
+    backgroundColor: '#FFFFFF',
+  }
+});

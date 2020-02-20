@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Animated, TouchableWithoutFeedback, View } from 'react-native';
+import { Animated, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 
 const AnimatedIcon = Animated.createAnimatedComponent(FontAwesome);
@@ -55,23 +55,22 @@ export const TabBarIcon: React.FC<Props> = ({
 
   return (
     <TouchableWithoutFeedback onPress={onPress}>
-      <Animated.View style={{
-        flexGrow: 1,
-        flexDirection: 'row',
-        alignItems: 'center',
-        height: minSize,
-        minWidth: minSize,
-        maxWidth: maxWidth,
-        backgroundColor: secondaryColor,
-        borderRadius: minSize / 2,
-        padding: padding
-      }}>
-        <View style={{
-          width: size,
-          height: size,
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}>
+      <Animated.View
+        style={[styles.container, {
+          height: minSize,
+          minWidth: minSize,
+          maxWidth: maxWidth,
+          backgroundColor: secondaryColor,
+          borderRadius: minSize / 2,
+          padding: padding
+        }]}
+      >
+        <View
+          style={[styles.iconContainer, {
+            width: size,
+            height: size,
+          }]}
+        >
           <AnimatedIcon
             name={icon}
             size={size - 5}
@@ -82,6 +81,7 @@ export const TabBarIcon: React.FC<Props> = ({
         </View>
         <Animated.Text
           numberOfLines={1}
+          ellipsizeMode="clip"
           style={{
             fontSize,
             opacity,
@@ -91,7 +91,6 @@ export const TabBarIcon: React.FC<Props> = ({
               { translateX: translate }
             ]
           }}
-          ellipsizeMode="clip"
         >
           {label}
         </Animated.Text>
@@ -99,3 +98,15 @@ export const TabBarIcon: React.FC<Props> = ({
     </TouchableWithoutFeedback>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flexGrow: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  iconContainer: {
+    alignItems: 'center',
+    justifyContent: 'center'
+  }
+});
