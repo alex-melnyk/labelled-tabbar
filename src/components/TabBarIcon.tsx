@@ -81,6 +81,7 @@ export const TabBarIcon: React.FC<Props> = ({
           />
         </View>
         <Animated.Text
+          numberOfLines={1}
           style={{
             fontSize,
             opacity,
